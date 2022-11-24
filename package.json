@@ -4,7 +4,10 @@
     "description": "",
     "scripts": {
         "dev": "nodemon ts-node server.ts",
+<<<<<<< HEAD
         "nodemon": "nodemon",
+=======
+>>>>>>> 5d578a525324f2a9c1502930dece237072c75a0c
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "author": "",

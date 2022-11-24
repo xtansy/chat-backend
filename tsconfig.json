@@ -1,11 +1,19 @@
 {
-    "compilerOptions": {
-        "esModuleInterop": true,
-        "target": "es6",
-        "moduleResolution": "node",
-        "sourceMap": true,
-        "outDir": "dist"
-    },
-    "types": ["node"],
-    "lib": ["es2015"]
+  "compilerOptions": {
+    "module": "CommonJS", 
+    "allowSyntheticDefaultImports": true, 
+    "esModuleInterop": true,
+    "target": "ESNext",
+    "moduleResolution": "Node",
+    "outDir": "dist",
+    "noFallthroughCasesInSwitch": true,
+    "isolatedModules": false,
+    "strict": true,
+    "noImplicitAny": true,
+    "useUnknownInCatchVariables": false,
+  },
+  "ts-node": {
+      "esm": true
+  },
+  "lib": ["esnext"]
 }
