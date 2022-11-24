@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "compilerOptions": {
     "module": "CommonJS", 
     "allowSyntheticDefaultImports": true, 
@@ -17,3 +18,15 @@
   },
   "lib": ["esnext"]
 }
+=======
+    "compilerOptions": {
+        "esModuleInterop": true,
+        "target": "es6",
+        "moduleResolution": "node",
+        "sourceMap": true,
+        "outDir": "dist"
+    },
+    "types": ["node"],
+    "lib": ["es2015"]
+}
+>>>>>>> 8aa836701e94e8981c83fdc5931732e79caa80eb
