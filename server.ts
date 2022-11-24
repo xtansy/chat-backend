@@ -1,7 +1,6 @@
 import express from "express";
 import cors from "cors";
-
-import { test123 } from "./test123/test123";
+import { mongoDbConnect } from "./core/mongodb";
 
 const app = express();
 
@@ -17,12 +16,13 @@ app.use(express.json());
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
 
+mongoDbConnect();
+
 app.get("/", (req, res) => {
     res.json({ message: "Welcome to bezkoder application." });
 });
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-    test123();
-    console.log(`Server is running on port ${PORT}.`);
+    console.log(`Server is s on port ${PORT}.`);
 });

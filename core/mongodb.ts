@@ -5,7 +5,7 @@ import { initialRolesWithMongo } from "../utils";
 
 const { USERNAME, PASSWORD } = dbConfig;
 
-const mongoDbConnect = () => {
+export const mongoDbConnect = () => {
     db.mongoose
         .connect(
             `mongodb+srv://${USERNAME}:${PASSWORD}@chat.nkpliol.mongodb.net/?retryWrites=true&w=majority`,
@@ -23,8 +23,3 @@ const mongoDbConnect = () => {
             process.exit();
         });
 };
-const hello = () => {
-    console.log(hello);
-};
-
-export { hello };
