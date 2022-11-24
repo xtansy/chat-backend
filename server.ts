@@ -1,8 +1,6 @@
 import express from "express";
 import cors from "cors";
 
-import { test123 } from "./test123/test123";
-
 const app = express();
 
 const corsOptions = {
@@ -23,6 +21,5 @@ app.get("/", (req, res) => {
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-    test123();
     console.log(`Server is running on port ${PORT}.`);
 });
