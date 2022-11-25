@@ -9,7 +9,10 @@ export const checkDuplicateUsernameOrEmail = (
     res: Response,
     next: () => void
 ) => {
+    console.log("middleware");
     const { username, email } = req.body;
+
+    let isDuplicate: boolean | null = null;
 
     user.findOne({ username }).exec((err, user) => {
         if (err) {
@@ -17,10 +20,7 @@ export const checkDuplicateUsernameOrEmail = (
             return;
         }
         if (user) {
-            res.status(400).send({
-                message: "Failed! Username is already in use!",
-            });
-            return;
+            isDuplicate = true;
         }
     });
     user.findOne({ email }).exec((err, user) => {
@@ -29,12 +29,16 @@ export const checkDuplicateUsernameOrEmail = (
             return;
         }
         if (user) {
-            res.status(400).send({
-                message: "Failed! Email is already in use!",
-            });
-            return;
+            isDuplicate = true;
         }
     });
+
+    if (!isDuplicate) {
+        res.status(400).send({
+            message: "Failed! Email or Username is already in use!",
+        });
+        return;
+    }
 
     next();
 };

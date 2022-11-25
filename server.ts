@@ -1,9 +1,9 @@
 import express from "express";
 import cors from "cors";
-<<<<<<< HEAD
-=======
+
 import { mongoDbConnect } from "./core/mongodb";
->>>>>>> 5d578a525324f2a9c1502930dece237072c75a0c
+import { authRoute } from "./routes/auth.route";
+import { userRoute } from "./routes/user.route";
 
 const app = express();
 
@@ -21,15 +21,17 @@ app.use(express.urlencoded({ extended: true }));
 
 mongoDbConnect();
 
-app.get("/", (req, res) => {
-    res.json({ message: "Welcome to bezkoder application." });
+authRoute(app);
+userRoute(app);
+
+app.get("/test", (req, res) => {
+    res.status(400).send({
+        message: "test",
+    });
 });
 
 const PORT = process.env.PORT || 8080;
+
 app.listen(PORT, () => {
-<<<<<<< HEAD
     console.log(`Server is running on port ${PORT}.`);
-=======
-    console.log(`Server is s on port ${PORT}.`);
->>>>>>> 5d578a525324f2a9c1502930dece237072c75a0c
 });
