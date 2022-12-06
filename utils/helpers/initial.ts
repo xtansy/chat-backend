@@ -1,5 +1,5 @@
 import { Error } from "mongoose";
-import { db } from "../models";
+import { db } from "../../models";
 
 const { role: Role } = db;
 

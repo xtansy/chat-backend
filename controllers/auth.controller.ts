@@ -4,7 +4,9 @@ import bcrypt from "bcryptjs";
 import { authConfig } from "../config/auth.config";
 import { db } from "../models";
 import { Response, Request } from "express";
-import { UserModel } from "../models/user.model";
+import { UserModel, UserModelDocument } from "../models/user.model";
+import { findOneCollection, Collections } from "../utils/mongodb";
+import { Model } from "mongoose";
 
 const User = db.user;
 const Role = db.role;
@@ -43,6 +45,13 @@ export const signup = (req: Request, res: Response) => {
 export const signin = (req: Request, res: Response) => {
     const username: string = req.body.username;
     const password: string = req.body.password;
+
+    // findOneCollection({
+    //     model: User,
+    //     filter: {
+    //         username,
+    //     },
+    // });
 
     User.findOne({
         username,

@@ -1,7 +1,7 @@
 import { db } from "../models";
 import { dbConfig } from "../config";
 import { Error } from "mongoose";
-import { initialRolesWithMongo } from "../utils";
+import { initialRolesWithMongo } from "../utils/helpers";
 
 const { USERNAME, PASSWORD } = dbConfig;
 

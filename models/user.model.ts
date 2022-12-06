@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import { Types } from "mongoose";
+import { Types, Document } from "mongoose";
 export interface UserModel {
     email: string;
     username: string;
