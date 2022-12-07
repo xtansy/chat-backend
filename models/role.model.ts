@@ -1,10 +1,7 @@
 import { Schema, model, Document } from "mongoose";
 
-export type RoleType = "user" | "admin" | "moderator";
+import { RoleModel } from "../@types";
 
-export interface RoleModel {
-    name: RoleType;
-}
 export type RoleModelDocument = RoleModel & Document;
 
 export const Role = model<RoleModelDocument>(

@@ -1,11 +1,8 @@
 import { Schema, model } from "mongoose";
-import { Types, Document } from "mongoose";
-export interface UserModel {
-    email: string;
-    username: string;
-    password: string;
-    role: Types.ObjectId;
-}
+import {  Document } from "mongoose";
+
+import { UserModel } from "../@types";
+
 export type UserModelDocument = UserModel & Document;
 
 export const User = model<UserModelDocument>(

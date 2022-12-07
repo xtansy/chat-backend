@@ -4,7 +4,8 @@ import bcrypt from "bcryptjs";
 import { authConfig } from "../config/auth.config";
 import { db } from "../models";
 import { Response, Request } from "express";
-import { UserModel, UserModelDocument } from "../models/user.model";
+import { UserModel } from "../@types/";
+import {  UserModelDocument } from "../models/user.model";
 import { findOneCollection, Collections } from "../utils/mongodb";
 import { Model } from "mongoose";
 
@@ -12,7 +13,6 @@ const User = db.user;
 const Role = db.role;
 
 export const signup = (req: Request, res: Response) => {
-    console.log("signUp");
 
     const username: string = req.body.username;
     const email: string = req.body.email;

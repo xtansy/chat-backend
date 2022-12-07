@@ -4,6 +4,7 @@ import cors from "cors";
 import { mongoDbConnect } from "./core/mongodb";
 import { authRoute } from "./routes/auth.route";
 import { userRoute } from "./routes/user.route";
+import { dialogRoute } from "./routes/dialog.route";
 
 const app = express();
 
@@ -23,6 +24,7 @@ mongoDbConnect();
 
 authRoute(app);
 userRoute(app);
+dialogRoute(app);
 
 app.get("/test", (req, res) => {
     res.status(400).send({

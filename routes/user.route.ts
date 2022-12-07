@@ -1,5 +1,5 @@
 import { verifyToken } from "../middleware/auth.Jwt";
-import { userBoard } from "../controllers/user.controller";
+import { userBoard, index } from "../controllers/user.controller";
 import { Express } from "express-serve-static-core";
 
 export const userRoute = (app: Express) => {
@@ -11,6 +11,10 @@ export const userRoute = (app: Express) => {
         next();
     });
 
+    app.get("/users/all", index);
+
+
+    
     app.get("/test/all", userBoard);
     app.get("/test/user", verifyToken, userBoard);
 };
