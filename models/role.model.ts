@@ -8,5 +8,7 @@ export const Role = model<RoleModelDocument>(
     "Role",
     new Schema<RoleModel>({
         name: String,
+    }, {
+        versionKey: false
     })
 );

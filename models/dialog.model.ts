@@ -23,5 +23,7 @@ export const Dialog = model<DialogModelDocument>(
             type: String,
         }],
         lastMessage: String
+    }, {
+        versionKey: false
     })
 );

@@ -3,8 +3,8 @@ import { getMyDialogs, createDialog, index, deleteAll } from "../controllers/dia
 import { verifyToken } from "../middleware/auth.Jwt";
 
 export const dialogRoute = (app: Express) => {
-    app.get("/dialog/deleteAll",  deleteAll);
-    app.get("/dialog/index",  index);
+    app.delete("/dialog/deleteAll", deleteAll);
+    app.get("/dialog/index", index);
     app.get("/dialog/getMyDialogs", verifyToken, getMyDialogs);
     app.post("/dialog/create", verifyToken, createDialog);
 };
