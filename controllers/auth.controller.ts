@@ -44,7 +44,7 @@ export const signup = (req: Request, res: Response) => {
             }
             res.send({
                 message: "User was registered successfully!",
-                user: {
+                data: {
                     _id: user._id,
                     login: user.login,
                     name: user.name,
@@ -92,7 +92,7 @@ export const signin = (req: Request, res: Response) => {
 
         res.status(200).send({
             message: "Succes Login!",
-            user: await user.populate("role"),
+            data: await user.populate("role"),
             accessToken: token,
         });
     });

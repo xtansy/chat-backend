@@ -17,7 +17,7 @@ export const index = async (req: Request, res: Response) => {
 };
 
 
-export const getMe = async (req: Request & { userId: string }, res: Response) => {
+export const getMe = async (req: any, res: Response) => {
     const userId = req.userId;
     db.user.findById(userId).populate("role").exec(((err, user) => {
         if (err || !user) {
@@ -27,7 +27,7 @@ export const getMe = async (req: Request & { userId: string }, res: Response) =>
             return;
         }
         res.json({
-            status: "success",
+            message: "success",
             data: user,
         });
     }));
