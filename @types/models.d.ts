@@ -5,14 +5,16 @@ export interface RoleModel {
 }
 export interface UserModel {
     email: string;
-    username: string;
+    login: string;
+    name: string;
+    surname: string;
     password: string;
     role: RoleModel;
 }
 
-export interface DialogModel {  
+export interface DialogModel {
     owner: UserModel;
-    partner:UserModel;
+    partner: UserModel;
     messages: string[];
     lastMessage: string;
 }

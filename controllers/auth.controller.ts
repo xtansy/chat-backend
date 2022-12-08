@@ -5,7 +5,7 @@ import { authConfig } from "../config/auth.config";
 import { db } from "../models";
 import { Response, Request } from "express";
 import { UserModel } from "../@types/";
-import {  UserModelDocument } from "../models/user.model";
+import { UserModelDocument } from "../models/user.model";
 import { findOneCollection, Collections } from "../utils/mongodb";
 import { Model } from "mongoose";
 
@@ -13,8 +13,10 @@ const User = db.user;
 const Role = db.role;
 
 export const signup = (req: Request, res: Response) => {
+    const login: string = req.body.login;
+    const name: string = req.body.name;
+    const surname: string = req.body.surname;
 
-    const username: string = req.body.username;
     const email: string = req.body.email;
     const password: string = req.body.password;
 
@@ -25,8 +27,10 @@ export const signup = (req: Request, res: Response) => {
         }
 
         const data: UserModel = {
-            username,
+            login,
             email,
+            name,
+            surname,
             password: bcrypt.hashSync(password, 8),
             role: role._id,
         };
@@ -38,12 +42,21 @@ export const signup = (req: Request, res: Response) => {
                 res.status(500).send({ message: err });
                 return;
             }
-            res.send({ message: "User was registered successfully!", user });
+            res.send({
+                message: "User was registered successfully!",
+                user: {
+                    _id: user._id,
+                    login: user.login,
+                    name: user.name,
+                    surname: user.surname,
+                    email: user.email,
+                },
+            });
         });
     });
 };
 export const signin = (req: Request, res: Response) => {
-    const username: string = req.body.username;
+    const login: string = req.body.login;
     const password: string = req.body.password;
 
     // findOneCollection({
@@ -54,7 +67,7 @@ export const signin = (req: Request, res: Response) => {
     // });
 
     User.findOne({
-        username,
+        login,
     }).exec(async (err, user) => {
         if (err) {
             res.status(500).send({ message: err });

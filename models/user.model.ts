@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import {  Document } from "mongoose";
+import { Document } from "mongoose";
 
 import { UserModel } from "../@types";
 
@@ -8,7 +8,15 @@ export type UserModelDocument = UserModel & Document;
 export const User = model<UserModelDocument>(
     "User",
     new Schema<UserModel>({
-        username: {
+        name: {
+            required: true,
+            type: String,
+        },
+        surname: {
+            required: true,
+            type: String,
+        },
+        login: {
             required: true,
             type: String,
         },
