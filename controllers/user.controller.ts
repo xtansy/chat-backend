@@ -1,16 +1,17 @@
 import { Request, Response } from "express";
 import { db } from "../models";
+import { findUserByLogin } from "../utils/mongodb";
 
 export const index = async (req: Request, res: Response) => {
     try {
         const users = await db.user.find({}).populate("role").exec();
         res.json({
-            status: "success",
+            message: "success",
             data: users,
         });
     } catch (error) {
         res.json({
-            status: "error",
+            message: "error",
             data: JSON.stringify(error),
         });
     }
@@ -31,7 +32,21 @@ export const getMe = async (req: any, res: Response) => {
             data: user,
         });
     }));
+};
+export const getUser = async (req: Request, res: Response) => {
+    const login = req.params.login;
 
+    const { isError, data } = await findUserByLogin(login);
+
+    if (isError || !data) {
+        res.status(404).json(isError)
+        return;
+    }
+
+    res.status(200).json({
+        message: "User found!",
+        data
+    })
 };
 
 export const deleteAll = (req: any, res: Response) => {

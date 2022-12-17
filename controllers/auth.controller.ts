@@ -5,9 +5,7 @@ import { authConfig } from "../config/auth.config";
 import { db } from "../models";
 import { Response, Request } from "express";
 import { UserModel } from "../@types/";
-import { UserModelDocument } from "../models/user.model";
-import { findOneCollection, Collections } from "../utils/mongodb";
-import { Model } from "mongoose";
+import { filterUser } from "../utils/helpers";
 
 const User = db.user;
 const Role = db.role;
@@ -26,7 +24,7 @@ export const signup = (req: Request, res: Response) => {
             return;
         }
 
-        const data: UserModel = {
+        const data: Omit<UserModel, "_id"> = {
             login,
             email,
             name,
@@ -55,45 +53,35 @@ export const signup = (req: Request, res: Response) => {
         });
     });
 };
-export const signin = (req: Request, res: Response) => {
+export const signin = async (req: Request, res: Response) => {
     const login: string = req.body.login;
     const password: string = req.body.password;
 
-    // findOneCollection({
-    //     model: User,
-    //     filter: {
-    //         username,
-    //     },
-    // });
+    const data = await db.user.findOne({ login }).populate("role").exec();
 
-    User.findOne({
-        login,
-    }).exec(async (err, user) => {
-        if (err) {
-            res.status(500).send({ message: err });
-            return;
-        }
+    if (!data) {
+        res.status(404).json({
+            message: "User not found"
+        })
+        return;
+    }
 
-        if (!user) {
-            return res.status(404).send({ message: "User Not found." });
-        }
+    const passwordIsValid = bcrypt.compareSync(password, data.password);
 
-        const passwordIsValid = bcrypt.compareSync(password, user.password);
-
-        if (!passwordIsValid) {
-            return res.status(401).send({
-                message: "Invalid Password!",
-            });
-        }
-
-        const token = jwt.sign({ id: user.id }, authConfig.secret, {
-            expiresIn: 86400, // 24 hours
+    if (!passwordIsValid) {
+        return res.status(401).send({
+            message: "Invalid Password!",
         });
+    }
 
-        res.status(200).send({
-            message: "Succes Login!",
-            data: await user.populate("role"),
-            accessToken: token,
-        });
+    const token = jwt.sign({ id: data._id }, authConfig.secret, {
+        expiresIn: 86400, // 24 hours
+    });
+
+
+    res.status(200).send({
+        message: "Succes Login!",
+        data: filterUser(data),
+        accessToken: token,
     });
 };

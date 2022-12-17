@@ -3,13 +3,17 @@ export type RoleType = "user" | "admin" | "moderator";
 export interface RoleModel {
     name: RoleType;
 }
-export interface UserModel {
+
+export interface UserInfo {
+    _id: string;
     email: string;
     login: string;
     name: string;
     surname: string;
-    password: string;
     role: RoleModel;
+}
+export interface UserModel extends UserInfo {
+    password: string;
 }
 
 export interface DialogModel {
@@ -18,3 +22,4 @@ export interface DialogModel {
     messages: string[];
     lastMessage: string;
 }
+

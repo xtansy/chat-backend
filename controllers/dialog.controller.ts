@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { DialogModel } from "../@types";
-import { findUser } from "../utils/mongodb";
 import { db } from "../models";
+import { filterUser, filterDialog } from "../utils/helpers/";
 
 export const deleteAll = (req: any, res: Response) => {
     db.dialog.deleteMany({}).exec((err) => {
@@ -18,7 +18,7 @@ export const deleteAll = (req: any, res: Response) => {
         });
     })
 };
-const index =  (req: any, res: Response) => {
+const index = (req: any, res: Response) => {
     db.dialog.find({}).populate(["owner", "partner"]).exec((err, dialogs) => {
         if (err || !dialogs) {
             res.status(403).json({
@@ -40,47 +40,77 @@ const getMyDialogs = (req: any, res: Response) => {
     db.dialog.find()
         .or([{ author: userId }, { partner: userId }])
         .populate(['owner', 'partner'])
-        .exec( (err, dialogs) =>{
+        .exec((err, dialogs) => {
             if (err) {
                 return res.status(404).json({
-                message: 'Dialogs not found',
+                    message: 'Dialogs not found',
                 });
             }
-            return res.json(dialogs);
+            return res.json({
+                message: "Dialogs founded!",
+                data: dialogs
+            });
         });
-    
+
 };
+
 const createDialog = async (req: any, res: Response) => {
     const userId = req.userId;
-    const partnerId = req.body.partnerId;
-    const ownerData = await findUser(userId);
 
-    if (ownerData.isError || !ownerData.data) {
-        res.send(403).json({error: ownerData.isError})
+    const partnerLogin = req.body.partnerLogin;
+
+    const owner = await db.user.findById(userId).populate("role").exec();
+
+    if (!owner) {
+        res.status(404).json({
+            message: "Owner not found"
+        })
         return;
     }
 
-    const partnerData = await findUser(partnerId);
-
-    if (partnerData.isError || !partnerData.data) {
-        res.send(403).json({error: partnerData.isError})
+    if (owner.login === partnerLogin) {
+        res.status(401).json({
+            message: "Нельзя создать диалог с самим собой"
+        })
         return;
     }
 
-    const dialogData: DialogModel = {
-        owner: ownerData.data,
-        partner: partnerData.data,
+    const partner = await db.user.findOne({ login: partnerLogin }).populate("role").exec();
+
+    if (!partner) {
+        res.status(404).json({
+            message: "partner not found"
+        })
+        return;
+    }
+
+
+
+    const createdDialog = await db.dialog.findOne({
+        $and: [{ owner }, { partner }]
+    }).exec();
+
+
+    if (createdDialog) {
+        res.status(401).json({
+            message: "Dialog is already created"
+        })
+        return;
+    }
+
+    const dialog: DialogModel = {
+        owner,
+        partner,
         lastMessage: "",
         messages: []
     }
 
-    await db.dialog.create(dialogData);
+    await db.dialog.create(dialog);
 
     res.status(200).json({
-        status: "succes",
-        data: dialogData
+        message: "Dialog was created!",
+        data: filterDialog(dialog)
     })
 };
-
 
 export { getMyDialogs, createDialog, index };
