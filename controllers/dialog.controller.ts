@@ -105,11 +105,11 @@ const createDialog = async (req: any, res: Response) => {
         messages: []
     }
 
-    await db.dialog.create(dialog);
+    const response = await db.dialog.create(dialog);
 
     res.status(200).json({
         message: "Dialog was created!",
-        data: filterDialog(dialog)
+        data: response
     })
 };
 

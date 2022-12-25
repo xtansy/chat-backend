@@ -13,7 +13,7 @@ import { socketOnConnect } from "./controllers/socket/socket.controller";
 
 const app = express();
 const httpServer = createServer(app);
-const io = new Server<ClientToServerEvents, ServerToClientEvents>(httpServer, {
+export const io = new Server<ClientToServerEvents, ServerToClientEvents>(httpServer, {
     cors: {
         origin: "*",
     },
