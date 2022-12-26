@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { ObjectId } from "mongodb";
 import { DialogModel } from "../@types";
 import { db } from "../models";
 import { filterUser, filterDialog } from "../utils/helpers/";
@@ -35,10 +36,11 @@ const index = (req: any, res: Response) => {
 
 };
 const getMyDialogs = (req: any, res: Response) => {
-    const userId = req.userId;
+    const userId = new ObjectId(req.userId);
+    console.log(userId);
 
     db.dialog.find()
-        .or([{ author: userId }, { partner: userId }])
+        .or([{ owner: userId }, { partner: userId }])
         .populate(['owner', 'partner'])
         .exec((err, dialogs) => {
             if (err) {
@@ -46,6 +48,7 @@ const getMyDialogs = (req: any, res: Response) => {
                     message: 'Dialogs not found',
                 });
             }
+            console.log(dialogs);
             return res.json({
                 message: "Dialogs founded!",
                 data: dialogs
