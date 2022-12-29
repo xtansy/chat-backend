@@ -3,6 +3,7 @@ import { ObjectId } from "mongodb";
 import { DialogModel } from "../@types";
 import { db } from "../models";
 import { filterUser, filterDialog } from "../utils/helpers/";
+import { createDialogEmit } from "./socket/socket.emits";
 
 export const deleteAll = (req: any, res: Response) => {
     db.dialog.deleteMany({}).exec((err) => {
@@ -37,7 +38,6 @@ const index = (req: any, res: Response) => {
 };
 const getMyDialogs = (req: any, res: Response) => {
     const userId = new ObjectId(req.userId);
-    console.log(userId);
 
     db.dialog.find()
         .or([{ owner: userId }, { partner: userId }])
@@ -48,7 +48,6 @@ const getMyDialogs = (req: any, res: Response) => {
                     message: 'Dialogs not found',
                 });
             }
-            console.log(dialogs);
             return res.json({
                 message: "Dialogs founded!",
                 data: dialogs
@@ -109,6 +108,8 @@ const createDialog = async (req: any, res: Response) => {
     }
 
     const response = await db.dialog.create(dialog);
+
+    createDialogEmit();
 
     res.status(200).json({
         message: "Dialog was created!",
