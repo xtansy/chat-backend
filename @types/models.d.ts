@@ -16,10 +16,18 @@ export interface UserModel extends UserInfo {
     password: string;
 }
 
+export interface MessageModel {
+    text: string;
+    userId: UserModel;
+}
+
 export interface DialogModel {
     owner: UserModel;
     partner: UserModel;
-    messages: string[];
+    messages: MessageModel[];
     lastMessage: string;
 }
+
+
+
 

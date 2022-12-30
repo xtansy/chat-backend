@@ -1,9 +1,10 @@
+import { MessageModelDocument } from "../models/message.model";
 export interface ServerToClientEvents {
-    message: (obj: { dialogId: string; message: string }) => void;
+    message: (obj: { dialogId: string; message: MessageModelDocument }) => void;
     createDialog: (obj: { text: string }) => void;
 }
 
 export interface ClientToServerEvents {
-    message: (obj: { dialogId: string; message: string }) => void;
     join: (dialogIds: string[]) => void;
+    message: (obj: { dialogId: string; text: string, userId: string }) => void;
 }

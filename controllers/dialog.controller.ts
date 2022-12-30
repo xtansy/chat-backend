@@ -21,7 +21,7 @@ export const deleteAll = (req: any, res: Response) => {
     })
 };
 const index = (req: any, res: Response) => {
-    db.dialog.find({}).populate(["owner", "partner"]).exec((err, dialogs) => {
+    db.dialog.find({}).populate(["owner", "partner", "messages"]).exec((err, dialogs) => {
         if (err || !dialogs) {
             res.status(403).json({
                 message: "Not found dialogs",
@@ -41,7 +41,7 @@ const getMyDialogs = (req: any, res: Response) => {
 
     db.dialog.find()
         .or([{ owner: userId }, { partner: userId }])
-        .populate(['owner', 'partner'])
+        .populate(['owner', 'partner', "messages"])
         .exec((err, dialogs) => {
             if (err) {
                 return res.status(404).json({

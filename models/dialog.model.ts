@@ -20,7 +20,9 @@ export const Dialog = model<DialogModelDocument>(
             ref: "User"
         },
         messages: [{
-            type: String,
+            required: true,
+            type: Schema.Types.ObjectId,
+            ref: "Message"
         }],
         lastMessage: String
     }, {
