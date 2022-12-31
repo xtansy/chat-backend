@@ -99,11 +99,11 @@ const createDialog = async (req: any, res: Response) => {
         })
         return;
     }
-
+    // const message = await db.message.create({ text: "", userId: owner._id });
     const dialog: DialogModel = {
         owner,
         partner,
-        lastMessage: "",
+        // lastMessage: message,
         messages: []
     }
 

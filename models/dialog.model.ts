@@ -24,7 +24,11 @@ export const Dialog = model<DialogModelDocument>(
             type: Schema.Types.ObjectId,
             ref: "Message"
         }],
-        lastMessage: String
+        // lastMessage: {
+        //     required: true,
+        //     type: Schema.Types.ObjectId,
+        //     ref: "Message"
+        // }
     }, {
         versionKey: false
     })

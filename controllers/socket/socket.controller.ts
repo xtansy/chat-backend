@@ -18,6 +18,7 @@ export const socketOnConnect = (socket: Socket<ClientToServerEvents, ServerToCli
         const message = await db.message.create({ text, userId });
         const dialog = await db.dialog.findById(dialogId).exec();
         dialog?.messages.push(message);
+        // dialog!.lastMessage = message;
         dialog?.save();
         io.in(dialogId).emit("message", { dialogId, message })
     })

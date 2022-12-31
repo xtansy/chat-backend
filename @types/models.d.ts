@@ -25,7 +25,7 @@ export interface DialogModel {
     owner: UserModel;
     partner: UserModel;
     messages: MessageModel[];
-    lastMessage: string;
+    // lastMessage: MessageModel;
 }
 
 
