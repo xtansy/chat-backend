@@ -11,6 +11,7 @@ export interface UserInfo {
     name: string;
     surname: string;
     role: RoleModel;
+    avatar: string;
 }
 export interface UserModel extends UserInfo {
     password: string;

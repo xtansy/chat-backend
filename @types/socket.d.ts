@@ -8,3 +8,4 @@ export interface ClientToServerEvents {
     join: (dialogIds: string[]) => void;
     message: (obj: { dialogId: string; text: string, userId: string }) => void;
 }
+

@@ -11,6 +11,7 @@ import { roleRoute } from "./routes/role.route";
 import { ClientToServerEvents, ServerToClientEvents } from "./@types/socket";
 import { socketOnConnect } from "./controllers/socket/socket.controller";
 
+
 const app = express();
 const httpServer = createServer(app);
 export const io = new Server<ClientToServerEvents, ServerToClientEvents>(httpServer, {

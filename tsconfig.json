@@ -10,10 +10,12 @@
         "isolatedModules": false,
         "strict": true,
         "noImplicitAny": true,
-        "useUnknownInCatchVariables": false
+        "useUnknownInCatchVariables": false,
     },
     "ts-node": {
         "esm": true
     },
-    "lib": ["esnext"]
+    "lib": [
+        "esnext"
+    ]
 }

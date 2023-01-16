@@ -9,5 +9,6 @@ export const filterUser = (user: UserModelDocument | UserModel): UserInfo => {
         name: user.name,
         surname: user.surname,
         role: user.role,
+        avatar: user.avatar
     }
 }

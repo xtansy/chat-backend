@@ -33,6 +33,7 @@ export const User = model<UserModelDocument>(
             type: Schema.Types.ObjectId,
             ref: "Role",
         },
+        avatar: String
     }, {
         versionKey: false
     })

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { db } from "../models";
 import { findUserByLogin } from "../utils/mongodb";
+import { cloudinaryUploadImage } from "../utils/cloudinary/cloudinary.services";
 
 export const index = async (req: Request, res: Response) => {
     try {
@@ -33,6 +34,7 @@ export const getMe = async (req: any, res: Response) => {
         });
     }));
 };
+
 export const getUser = async (req: Request, res: Response) => {
     const login = req.params.login;
 
@@ -64,6 +66,51 @@ export const deleteAll = (req: any, res: Response) => {
         });
     })
 };
+
+
+export const uploadAvatar = async (req: any, res: Response) => {
+
+    if (!req.file) {
+        return res.status(400).json({
+            message: "Нет файла!"
+        })
+    }
+    const buffer = req.file.buffer;
+
+    const response = await cloudinaryUploadImage(buffer);
+
+    const user = await db.user.findById(req.userId);
+
+    if (user) {
+        user.avatar = response.url;
+        user.save();
+        return res.status(200).json({
+            message: "Загрузил",
+            url: response.url
+        })
+    }
+
+    return res.status(400).json({
+        message: "Произошла ошибка"!
+    })
+};
+
+export const deleteAvatar = async (req: any, res: Response) => {
+    const user = await db.user.findById(req.userId);
+
+    if (user) {
+        user.avatar = "";
+        user.save();
+        return res.status(200).json({
+            message: "Удалил",
+        })
+    }
+
+    return res.status(400).json({
+        message: "Произошла ошибка"!
+    })
+};
+
 
 export const allAccess = (req: Request, res: Response) => {
     res.status(200).send("Public Content.");

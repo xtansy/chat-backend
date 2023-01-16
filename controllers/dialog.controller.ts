@@ -81,7 +81,7 @@ const createDialog = async (req: any, res: Response) => {
 
     if (!partner) {
         res.status(404).json({
-            message: "partner not found"
+            message: "Партнер не найден!"
         })
         return;
     }

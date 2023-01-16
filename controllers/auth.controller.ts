@@ -31,6 +31,7 @@ export const signup = (req: Request, res: Response) => {
             surname,
             password: bcrypt.hashSync(password, 8),
             role: role._id,
+            avatar: ""
         };
 
         const user = new User(data);
