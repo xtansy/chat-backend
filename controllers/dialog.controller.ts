@@ -3,7 +3,7 @@ import { ObjectId } from "mongodb";
 import { DialogModel } from "../@types";
 import { db } from "../models";
 import { filterUser, filterDialog } from "../utils/helpers/";
-import { createDialogEmit } from "./socket/socket.emits";
+import { createDialogEmit, deleteDialogEmit } from "./socket/socket.emits";
 
 export const deleteAll = (req: any, res: Response) => {
     db.dialog.deleteMany({}).exec((err) => {
@@ -20,7 +20,40 @@ export const deleteAll = (req: any, res: Response) => {
         });
     })
 };
-const index = (req: any, res: Response) => {
+
+export const deleteDialog = async (req: any, res: Response) => {
+    const userId = req.userId;
+    const dialogId = req.params.dialogId;
+
+    const dialog = await db.dialog.findById(dialogId);
+
+    if (!dialog) {
+        return res.status(404).json({
+            message: "Диалог не найден",
+        });
+    }
+
+    db.dialog.deleteOne(
+        {
+            $or: [{ owner: userId }, { partner: userId }],
+            $and: [{ _id: dialogId }]
+        },
+        (err) => {
+            if (err) {
+                return res.status(401).json({
+                    message: "Диалог не был удален",
+                    error: err
+                });
+            }
+            deleteDialogEmit();
+            return res.status(200).json({
+                message: "Диалог был удален!",
+            });
+        }
+    )
+}
+
+export const index = (req: any, res: Response) => {
     db.dialog.find({}).populate(["owner", "partner", "messages"]).exec((err, dialogs) => {
         if (err || !dialogs) {
             res.status(403).json({
@@ -36,7 +69,8 @@ const index = (req: any, res: Response) => {
     });
 
 };
-const getMyDialogs = (req: any, res: Response) => {
+
+export const getMyDialogs = (req: any, res: Response) => {
     const userId = new ObjectId(req.userId);
 
     db.dialog.find()
@@ -56,7 +90,7 @@ const getMyDialogs = (req: any, res: Response) => {
 
 };
 
-const createDialog = async (req: any, res: Response) => {
+export const createDialog = async (req: any, res: Response) => {
     const userId = req.userId;
 
     const partnerLogin = req.body.partnerLogin;
@@ -116,5 +150,3 @@ const createDialog = async (req: any, res: Response) => {
         data: response
     })
 };
-
-export { getMyDialogs, createDialog, index };
