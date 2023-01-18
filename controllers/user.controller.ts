@@ -111,6 +111,35 @@ export const deleteAvatar = async (req: any, res: Response) => {
     })
 };
 
+export const changeUserInfo = async (req: any, res: Response) => {
+    const email: string = req.body.email;
+    const login: string = req.body.login;
+    const name: string = req.body.name;
+    const surname: string = req.body.surname;
+
+    const userId = req.userId;
+
+    let user = await db.user.findById(userId);
+
+    if (user) {
+
+        user.email = email;
+        user.name = name;
+        user.login = login;
+        user.surname = surname;
+
+        await user.save();
+
+        return res.status(200).json({
+            message: "Пользователь успешно обновлён!"
+        })
+    }
+
+    return res.status(404).json({
+        message: "Пользователь не изменен!"
+    })
+};
+
 
 export const allAccess = (req: Request, res: Response) => {
     res.status(200).send("Public Content.");
