@@ -1,5 +1,5 @@
 import { verifyToken } from "../middleware/auth.Jwt";
-import { userBoard, index, deleteAll, getMe, getUser, uploadAvatar, deleteAvatar, changeUserInfo } from "../controllers/user.controller";
+import { userBoard, index, deleteAll, getMe, getUser, uploadAvatar, deleteAvatar, changeUserInfo, changeUserPassword } from "../controllers/user.controller";
 import { Express } from "express-serve-static-core";
 import { upload } from "../core/multer";
 
@@ -22,6 +22,8 @@ export const userRoute = (app: Express) => {
     app.get("/users/getUser/:login", verifyToken, getUser);
 
     app.post("/users/changeUserInfo", verifyToken, changeUserInfo);
+
+    app.post("/users/changeUserPassword", verifyToken, changeUserPassword);
 
 
     app.get("/test/all", userBoard);

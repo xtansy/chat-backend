@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { db } from "../models";
 import { findUserByLogin } from "../utils/mongodb";
 import { cloudinaryUploadImage } from "../utils/cloudinary/cloudinary.services";
+import bcrypt from "bcryptjs";
 
 export const index = async (req: Request, res: Response) => {
     try {
@@ -139,6 +140,38 @@ export const changeUserInfo = async (req: any, res: Response) => {
         message: "Пользователь не изменен!"
     })
 };
+
+export const changeUserPassword = async (req: any, res: Response) => {
+    const oldPassword: string = req.body.oldPassword;
+    const newPassword: string = req.body.newPassword;
+
+
+    const userId = req.userId;
+
+    let user = await db.user.findById(userId);
+
+    if (user) {
+        const passwordIsValid = bcrypt.compareSync(oldPassword, user.password);
+        if (!passwordIsValid) {
+            return res.status(401).send({
+                message: "Неверный пароль!",
+            });
+        }
+
+        user.password = bcrypt.hashSync(newPassword, 8)
+
+        await user.save();
+
+        return res.status(200).json({
+            message: "Пароль успешно обновлён!"
+        })
+    }
+
+    return res.status(404).json({
+        message: "Пароль не изменен!"
+    })
+};
+
 
 
 export const allAccess = (req: Request, res: Response) => {
