@@ -1,8 +1,10 @@
 import { Request, Response } from "express";
 import { db } from "../models";
 import { findUserByLogin } from "../utils/mongodb";
-import { cloudinaryUploadImage } from "../utils/cloudinary/cloudinary.services";
+import { cloudinaryUploadImage, cloudinaryDeleteImage } from "../utils/cloudinary/cloudinary.services";
 import bcrypt from "bcryptjs";
+import { getImagePublicId } from "../utils/helpers";
+
 
 export const index = async (req: Request, res: Response) => {
     try {
@@ -80,9 +82,11 @@ export const uploadAvatar = async (req: any, res: Response) => {
 
     const response = await cloudinaryUploadImage(buffer);
 
+
     const user = await db.user.findById(req.userId);
 
     if (user) {
+        await cloudinaryDeleteImage(user.avatar);
         user.avatar = response.url;
         user.save();
         return res.status(200).json({
