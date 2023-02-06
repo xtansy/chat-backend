@@ -18,6 +18,7 @@ export const Message = model<MessageModelDocument>(
             type: Schema.Types.ObjectId,
             ref: "User"
         },
+        photos: [{ type: String }]
     }, {
         versionKey: false,
         timestamps: {

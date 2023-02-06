@@ -20,6 +20,7 @@ export interface UserModel extends UserInfo {
 export interface MessageModel {
     text: string;
     userId: UserModel;
+    photos: string[];
 }
 
 export interface DialogModel {

@@ -62,7 +62,7 @@ export const signin = async (req: Request, res: Response) => {
 
     if (!data) {
         res.status(404).json({
-            message: "User not found"
+            message: "Пользователь не найден!"
         })
         return;
     }
@@ -71,7 +71,7 @@ export const signin = async (req: Request, res: Response) => {
 
     if (!passwordIsValid) {
         return res.status(401).send({
-            message: "Invalid Password!",
+            message: "Неверный пароль!",
         });
     }
 
@@ -81,7 +81,7 @@ export const signin = async (req: Request, res: Response) => {
 
 
     res.status(200).send({
-        message: "Succes Login!",
+        message: "Вы успешно зашли!",
         data: filterUser(data),
         accessToken: token,
     });
