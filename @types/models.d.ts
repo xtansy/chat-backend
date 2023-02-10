@@ -18,6 +18,7 @@ export interface UserModel extends UserInfo {
 }
 
 export interface MessageModel {
+    _id: string;
     text: string;
     userId: UserModel;
     photos: string[];

@@ -33,6 +33,10 @@ export const deleteDialog = async (req: any, res: Response) => {
         });
     }
 
+    dialog.messages.forEach(mes => {
+        db.message.deleteOne({ _id: mes._id });
+    })
+
     db.dialog.deleteOne(
         {
             $or: [{ owner: userId }, { partner: userId }],
