@@ -82,13 +82,12 @@ export const uploadAvatar = async (req: any, res: Response) => {
 
     const response = await cloudinaryUploadImage(buffer);
 
-
     const user = await db.user.findById(req.userId);
 
     if (user) {
         await cloudinaryDeleteImage(user.avatar);
         user.avatar = response.url;
-        user.save();
+        await user.save();
         return res.status(200).json({
             message: "Загрузил",
             url: response.url
@@ -96,7 +95,7 @@ export const uploadAvatar = async (req: any, res: Response) => {
     }
 
     return res.status(400).json({
-        message: "Произошла ошибка"!
+        message: "Произошла ошибка!"
     })
 };
 
