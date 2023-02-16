@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { authConfig } from "../config/auth.config";
 
-export const verifyToken = (req: any, res: Response, next: () => void) => {
+export const verifyToken = (req: Request, res: Response, next: () => void) => {
     const token = req.headers["x-access-token"] as string;
 
     if (!token) {
@@ -10,12 +10,14 @@ export const verifyToken = (req: any, res: Response, next: () => void) => {
     }
 
     // jwt по токену определит нужный объект с _id юзера, который мы создаем в signin
-    // суем этот id в req.userId и бекенд понимает с каким юзером работаем
-    jwt.verify(token, authConfig.secret, (err, decoded: any) => {
-        if (err) {
+    // суем этот id в req.body.userId и бекенд понимает с каким юзером работаем
+    jwt.verify(token, authConfig.secret, (err, decoded) => {
+        if (err || !decoded) {
             return res.status(401).send({ message: "Unauthorized!" });
         }
-        req.userId = decoded.id;
+        if (typeof decoded !== "string") {
+            req.body.userId = decoded.id;
+        }
         next();
     });
 };
@@ -25,7 +27,7 @@ export const verifyToken = (req: any, res: Response, next: () => void) => {
 //     res: Response,
 //     next: () => void
 // ) => {
-//     user.findById(req.userId).exec((err, user) => {
+//     user.findById(req.body.userId).exec((err, user) => {
 //         if (err) {
 //             res.status(500).send({ message: err });
 //             return;

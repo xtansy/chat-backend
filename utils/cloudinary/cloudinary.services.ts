@@ -18,13 +18,13 @@ export const cloudinaryUploadImage = async (buffer: Buffer): Promise<UploadApiRe
         streamifier.createReadStream(buffer).pipe(stream);
     });
 }
+
 export const cloudinaryUploadImages = async (buffers: Buffer[]): Promise<UploadApiResponse[]> => {
     const promises = buffers.map(async (buffer) => {
         return cloudinaryUploadImage(buffer)
     })
     return Promise.all(promises);
 }
-
 
 export const cloudinaryDeleteImage = async (url: string) => {
     const publicId = getImagePublicId(url);

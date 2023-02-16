@@ -2,11 +2,15 @@ import { Request, Response } from "express";
 import { ObjectId } from "mongodb";
 import { DialogModel } from "../@types";
 import { db } from "../models";
-import { filterUser, filterDialog } from "../utils/helpers/";
 import { createDialogEmit, deleteDialogEmit } from "./socket/socket.emits";
 
-export const deleteAll = (req: any, res: Response) => {
-    db.dialog.deleteMany({}).exec((err) => {
+
+const Dialog = db.dialog;
+const Message = db.message;
+const User = db.user;
+
+export const deleteAll = (req: Request, res: Response) => {
+    Dialog.deleteMany({}).exec((err) => {
         if (err) {
             res.status(403).json({
                 message: "Cannot delete all dialogs",
@@ -21,63 +25,61 @@ export const deleteAll = (req: any, res: Response) => {
     })
 };
 
-export const deleteDialog = async (req: any, res: Response) => {
-    const userId = req.userId;
+export const deleteDialog = async (req: Request, res: Response) => {
+    const userId = req.body.userId;
     const dialogId = req.params.dialogId;
 
-    const dialog = await db.dialog.findById(dialogId);
-
-    if (!dialog) {
-        return res.status(404).json({
-            message: "Диалог не найден",
-        });
-    }
-
-    dialog.messages.forEach(mes => {
-        db.message.deleteOne({ _id: mes._id });
-    })
-
-    db.dialog.deleteOne(
-        {
-            $or: [{ owner: userId }, { partner: userId }],
-            $and: [{ _id: dialogId }]
-        },
-        (err) => {
-            if (err) {
-                return res.status(401).json({
-                    message: "Диалог не был удален",
-                    error: err
-                });
-            }
-            deleteDialogEmit();
-            return res.status(200).json({
-                message: "Диалог был удален!",
+    Dialog.findById(dialogId).exec((err, dialog) => {
+        if (err || !dialog) {
+            return res.status(404).json({
+                message: "Диалог не найден",
             });
         }
-    )
+
+        dialog.messages.forEach(async (mes) => {
+            await Message.deleteOne({ _id: mes._id });
+        })
+
+        Dialog.deleteOne(
+            {
+                $or: [{ owner: userId }, { partner: userId }],
+                $and: [{ _id: dialogId }]
+            },
+            (err) => {
+                if (err) {
+                    return res.status(401).json({
+                        message: "Диалог не был удален",
+                        error: err
+                    });
+                }
+                deleteDialogEmit({ dialogId: String(dialog._id) });
+                return res.status(200).json({
+                    message: "Диалог был удален!",
+                });
+            }
+        )
+    })
 }
 
-export const index = (req: any, res: Response) => {
-    db.dialog.find({}).populate(["owner", "partner", "messages"]).exec((err, dialogs) => {
+export const index = (req: Request, res: Response) => {
+    Dialog.find({}).populate(["owner", "partner", "messages"]).exec((err, dialogs) => {
         if (err || !dialogs) {
-            res.status(403).json({
+            return res.status(403).json({
                 message: "Not found dialogs",
                 error: err
             })
-            return;
         }
         res.json({
             status: "success",
             data: dialogs,
         });
     });
-
 };
 
-export const getMyDialogs = (req: any, res: Response) => {
-    const userId = new ObjectId(req.userId);
+export const getMyDialogs = (req: Request, res: Response) => {
+    const userId = new ObjectId(req.body.userId);
 
-    db.dialog.find()
+    Dialog.find()
         .or([{ owner: userId }, { partner: userId }])
         .populate(['owner', 'partner', "messages"])
         .exec((err, dialogs) => {
@@ -91,66 +93,64 @@ export const getMyDialogs = (req: any, res: Response) => {
                 data: dialogs
             });
         });
-
 };
 
 export const createDialog = async (req: any, res: Response) => {
-    const userId = req.userId;
 
-    const partnerLogin = req.body.partnerLogin;
+    const { userId, partnerLogin } = req.body;
 
-    const owner = await db.user.findById(userId).populate("role").exec();
+    User.findById(userId).populate("role").exec((err, owner) => {
+        if (err || !owner) {
+            return res.status(404).json({
+                message: "Owner not found"
+            })
+        }
 
-    if (!owner) {
-        res.status(404).json({
-            message: "Owner not found"
-        })
-        return;
-    }
+        if (owner.login === partnerLogin) {
+            return res.status(401).json({
+                message: "Нельзя создать диалог с самим собой"
+            })
+        }
 
-    if (owner.login === partnerLogin) {
-        res.status(401).json({
-            message: "Нельзя создать диалог с самим собой"
-        })
-        return;
-    }
+        User.findOne({ login: partnerLogin }).populate("role").exec((err, partner) => {
+            if (err || !partner) {
+                return res.status(404).json({
+                    message: "Партнер не найден!"
+                })
+            }
 
-    const partner = await db.user.findOne({ login: partnerLogin }).populate("role").exec();
+            Dialog.findOne({
+                $and: [{ owner }, { partner }]
+            }).exec((err, createdDialog) => {
+                if (createdDialog) {
+                    return res.status(401).json({
+                        message: "Dialog is already created"
+                    })
+                }
+            });
 
-    if (!partner) {
-        res.status(404).json({
-            message: "Партнер не найден!"
-        })
-        return;
-    }
+            const dialog: DialogModel = {
+                owner,
+                partner,
+                messages: []
+            }
 
+            const response = new Dialog(dialog);
 
+            response.save((err, resp) => {
+                if (err || !resp) {
+                    return res.status(401).json({
+                        message: err,
+                    })
+                }
 
-    const createdDialog = await db.dialog.findOne({
-        $and: [{ owner }, { partner }]
-    }).exec();
+                createDialogEmit();
 
-
-    if (createdDialog) {
-        res.status(401).json({
-            message: "Dialog is already created"
-        })
-        return;
-    }
-    // const message = await db.message.create({ text: "", userId: owner._id });
-    const dialog: DialogModel = {
-        owner,
-        partner,
-        // lastMessage: message,
-        messages: []
-    }
-
-    const response = await db.dialog.create(dialog);
-
-    createDialogEmit();
-
-    res.status(200).json({
-        message: "Dialog was created!",
-        data: response
-    })
+                res.status(200).json({
+                    message: "Dialog was created!",
+                    data: resp
+                })
+            })
+        });
+    });
 };

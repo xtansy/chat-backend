@@ -5,8 +5,8 @@ export const createDialogEmit = () => {
     io.emit("createDialog", { text: "New dialog was created" })
 }
 
-export const deleteDialogEmit = () => {
-    io.emit("deleteDialog", { text: "Dialog was deleted" })
+export const deleteDialogEmit = ({ dialogId }: { dialogId: string }) => {
+    io.in(dialogId).emit("deleteDialog", { text: "Dialog was deleted" })
 }
 
 export const messageEmit: ServerToClientEvents["message"] = ({ dialogId, message }) => {

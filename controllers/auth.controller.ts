@@ -5,18 +5,13 @@ import { authConfig } from "../config/auth.config";
 import { db } from "../models";
 import { Response, Request } from "express";
 import { UserModel } from "../@types/";
-import { filterUser } from "../utils/helpers";
 
 const User = db.user;
 const Role = db.role;
 
 export const signup = (req: Request, res: Response) => {
-    const login: string = req.body.login;
-    const name: string = req.body.name;
-    const surname: string = req.body.surname;
 
-    const email: string = req.body.email;
-    const password: string = req.body.password;
+    const { login, name, surname, email, password }: Omit<UserModel, "_id" | "avatar" | "role"> = req.body;
 
     Role.findOne({ name: "user" }).exec((err, role) => {
         if (!role || err) {
@@ -38,11 +33,11 @@ export const signup = (req: Request, res: Response) => {
 
         user.save((err, user) => {
             if (err) {
-                res.status(500).send({ message: err });
+                res.status(400).send({ message: err });
                 return;
             }
-            res.send({
-                message: "User was registered successfully!",
+            res.status(201).json({
+                message: "Пользователь успешно создан!",
                 data: {
                     _id: user._id,
                     login: user.login,
@@ -54,35 +49,42 @@ export const signup = (req: Request, res: Response) => {
         });
     });
 };
+
 export const signin = async (req: Request, res: Response) => {
-    const login: string = req.body.login;
-    const password: string = req.body.password;
 
-    const data = await db.user.findOne({ login }).populate("role").exec();
+    const { login, password }: Pick<UserModel, "login" | "password"> = req.body;
 
-    if (!data) {
-        res.status(404).json({
-            message: "Пользователь не найден!"
-        })
-        return;
-    }
+    User.findOne({ login }).populate("role").exec((err, data) => {
+        if (err || !data) {
+            return res.status(404).json({
+                message: "Пользователь не найден!"
+            })
+        }
 
-    const passwordIsValid = bcrypt.compareSync(password, data.password);
+        const passwordIsValid = bcrypt.compareSync(password, data.password);
 
-    if (!passwordIsValid) {
-        return res.status(401).send({
-            message: "Неверный пароль!",
+        if (!passwordIsValid) {
+            return res.status(401).json({
+                message: "Неверный пароль!",
+            });
+        }
+
+        const token = jwt.sign({ id: data._id }, authConfig.secret, {
+            expiresIn: 86400, // 24 hours
         });
-    }
 
-    const token = jwt.sign({ id: data._id }, authConfig.secret, {
-        expiresIn: 86400, // 24 hours
-    });
-
-
-    res.status(200).send({
-        message: "Вы успешно зашли!",
-        data: filterUser(data),
-        accessToken: token,
+        res.status(200).json({
+            message: "Вы успешно зашли!",
+            data: {
+                login: data.login,
+                name: data.name,
+                surname: data.surname,
+                email: data.email,
+                _id: data._id,
+                role: data.role,
+                avatar: data.avatar
+            },
+            accessToken: token,
+        });
     });
 };

@@ -1,14 +1,14 @@
 import { Request, Response } from "express";
 import { db } from "../models";
-import { findUserByLogin } from "../utils/mongodb";
 import { cloudinaryUploadImage, cloudinaryDeleteImage } from "../utils/cloudinary/cloudinary.services";
 import bcrypt from "bcryptjs";
 import { getImagePublicId } from "../utils/helpers";
 
+const User = db.user;
 
 export const index = async (req: Request, res: Response) => {
     try {
-        const users = await db.user.find({}).populate("role").exec();
+        const users = await User.find({}).populate("role").exec();
         res.json({
             message: "success",
             data: users,
@@ -22,14 +22,13 @@ export const index = async (req: Request, res: Response) => {
 };
 
 
-export const getMe = async (req: any, res: Response) => {
-    const userId = req.userId;
-    db.user.findById(userId).populate("role").exec(((err, user) => {
+export const getMe = async (req: Request, res: Response) => {
+    const userId = req.body.userId;
+    User.findById(userId).populate("role").exec(((err, user) => {
         if (err || !user) {
-            res.status(404).json({
+            return res.status(404).json({
                 message: "User not found"
             })
-            return;
         }
         res.json({
             message: "success",
@@ -38,30 +37,14 @@ export const getMe = async (req: any, res: Response) => {
     }));
 };
 
-export const getUser = async (req: Request, res: Response) => {
-    const login = req.params.login;
 
-    const { isError, data } = await findUserByLogin(login);
-
-    if (isError || !data) {
-        res.status(404).json(isError)
-        return;
-    }
-
-    res.status(200).json({
-        message: "User found!",
-        data
-    })
-};
-
-export const deleteAll = (req: any, res: Response) => {
-    db.user.deleteMany({}).exec((err) => {
+export const deleteAll = (req: Request, res: Response) => {
+    User.deleteMany({}).exec((err) => {
         if (err) {
-            res.status(403).json({
+            return res.status(403).json({
                 message: "Cannot delete all users",
                 error: err
             })
-            return;
         }
         res.status(200).json({
             status: "succes",
@@ -71,7 +54,9 @@ export const deleteAll = (req: any, res: Response) => {
 };
 
 
-export const uploadAvatar = async (req: any, res: Response) => {
+export const uploadAvatar = async (req: Request, res: Response) => {
+
+    const userId = req.body.userId;
 
     if (!req.file) {
         return res.status(400).json({
@@ -82,50 +67,57 @@ export const uploadAvatar = async (req: any, res: Response) => {
 
     const response = await cloudinaryUploadImage(buffer);
 
-    const user = await db.user.findById(req.userId);
+    User.findById(userId).exec(async (err, user) => {
+        if (err || !user) {
+            return res.status(400).json({
+                message: "Произошла ошибка!"
+            })
+        }
 
-    if (user) {
         await cloudinaryDeleteImage(user.avatar);
+
         user.avatar = response.url;
+
         await user.save();
+
         return res.status(200).json({
             message: "Загрузил",
             url: response.url
         })
-    }
-
-    return res.status(400).json({
-        message: "Произошла ошибка!"
-    })
+    });
 };
 
-export const deleteAvatar = async (req: any, res: Response) => {
-    const user = await db.user.findById(req.userId);
+export const deleteAvatar = async (req: Request, res: Response) => {
+    const userId = req.body.userId;
 
-    if (user) {
+    User.findById(userId).exec(async (err, user) => {
+        if (err || !user) {
+            return res.status(400).json({
+                message: "Произошла ошибка"!
+            })
+        }
         user.avatar = "";
-        user.save();
+        await user.save();
         return res.status(200).json({
             message: "Удалил",
         })
-    }
-
-    return res.status(400).json({
-        message: "Произошла ошибка"!
     })
 };
 
-export const changeUserInfo = async (req: any, res: Response) => {
+export const changeUserInfo = async (req: Request, res: Response) => {
     const email: string = req.body.email;
     const login: string = req.body.login;
     const name: string = req.body.name;
     const surname: string = req.body.surname;
 
-    const userId = req.userId;
+    const userId = req.body.userId;
 
-    let user = await db.user.findById(userId);
-
-    if (user) {
+    User.findById(userId).exec(async (err, user) => {
+        if (err || !user) {
+            return res.status(404).json({
+                message: "Пользователь не изменен!"
+            })
+        }
 
         user.email = email;
         user.name = name;
@@ -137,23 +129,23 @@ export const changeUserInfo = async (req: any, res: Response) => {
         return res.status(200).json({
             message: "Пользователь успешно обновлён!"
         })
-    }
-
-    return res.status(404).json({
-        message: "Пользователь не изменен!"
     })
 };
 
-export const changeUserPassword = async (req: any, res: Response) => {
+export const changeUserPassword = async (req: Request, res: Response) => {
     const oldPassword: string = req.body.oldPassword;
     const newPassword: string = req.body.newPassword;
 
+    const userId = req.body.userId;
 
-    const userId = req.userId;
+    User.findById(userId).exec(async (err, user) => {
 
-    let user = await db.user.findById(userId);
+        if (err || !user) {
+            return res.status(404).json({
+                message: "Пароль не изменен!"
+            })
+        }
 
-    if (user) {
         const passwordIsValid = bcrypt.compareSync(oldPassword, user.password);
         if (!passwordIsValid) {
             return res.status(401).send({
@@ -168,11 +160,7 @@ export const changeUserPassword = async (req: any, res: Response) => {
         return res.status(200).json({
             message: "Пароль успешно обновлён!"
         })
-    }
-
-    return res.status(404).json({
-        message: "Пароль не изменен!"
-    })
+    });
 };
 
 

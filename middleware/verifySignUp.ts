@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { db } from "../models";
 import { RoleType } from "../@types";
 
-const { user: User, role } = db;
+const { user: User } = db;
 
 export const checkDuplicateUsernameOrEmail = (
     req: Request,

@@ -5,11 +5,11 @@ export interface RoleModel {
 }
 
 export interface UserInfo {
-    _id: string;
-    email: string;
     login: string;
-    name: string;
     surname: string;
+    name: string;
+    email: string;
+    _id: string;
     role: RoleModel;
     avatar: string;
 }
