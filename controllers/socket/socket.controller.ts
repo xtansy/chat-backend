@@ -5,12 +5,14 @@ import { ClientToServerEvents, ServerToClientEvents } from "../../@types/socket"
 import { db } from "../../models";
 import { messageEmit } from "./socket.emits";
 import { cloudinaryUploadImages } from "../../utils/cloudinary/cloudinary.services";
+import { socketIdAndUserId } from "./socketIdAndUserId";
 
 export const socketOnConnect = (socket: Socket<ClientToServerEvents, ServerToClientEvents, DefaultEventsMap, any>) => {
 
     // join
     socket.on("join", (dialogIds) => {
         socket.join(dialogIds)
+        // socketIdAndUserId.set();
     })
 
 

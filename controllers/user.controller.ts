@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { db } from "../models";
 import { cloudinaryUploadImage, cloudinaryDeleteImage } from "../utils/cloudinary/cloudinary.services";
 import bcrypt from "bcryptjs";
-import { getImagePublicId } from "../utils/helpers";
 
 const User = db.user;
 
@@ -70,7 +69,7 @@ export const uploadAvatar = async (req: Request, res: Response) => {
     User.findById(userId).exec(async (err, user) => {
         if (err || !user) {
             return res.status(400).json({
-                message: "Произошла ошибка!"
+                message: "Произошла ошибка!",
             })
         }
 

@@ -8,7 +8,7 @@ export const userRoute = (app: Express) => {
     app.get("/users/all", index);
     app.get("/users/getMe", verifyToken, getMe);
 
-    app.post("/users/upload", [verifyToken, upload.single('avatar')], uploadAvatar);
+    app.post("/users/upload", [upload.single('avatar'), verifyToken], uploadAvatar);
     app.post("/users/changeUserInfo", verifyToken, changeUserInfo);
     app.post("/users/changeUserPassword", verifyToken, changeUserPassword);
 

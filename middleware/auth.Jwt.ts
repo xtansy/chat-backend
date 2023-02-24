@@ -17,8 +17,10 @@ export const verifyToken = (req: Request, res: Response, next: () => void) => {
         }
         if (typeof decoded !== "string") {
             req.body.userId = decoded.id;
+            next();
+        } else {
+            return res.status(403).send({ message: "Decoded error" });
         }
-        next();
     });
 };
 
