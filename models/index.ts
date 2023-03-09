@@ -1,11 +1,10 @@
 import mongoose, { Model } from "mongoose";
 
 import { User, UserModelDocument } from "./user.model";
-import { RoleType } from "../@types";
 import { RoleModelDocument, Role } from "./role.model";
 import { DialogModelDocument, Dialog } from "./dialog.model";
 import { MessageModelDocument, Message } from "./message.model";
-
+import { RoleType } from "../@types/models";
 mongoose.Promise = global.Promise;
 
 interface Database {

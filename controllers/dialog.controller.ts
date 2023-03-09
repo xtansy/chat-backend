@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { ObjectId } from "mongodb";
-import { DialogModel } from "../@types";
+import { DialogModel } from "../@types/models";
 import { db } from "../models";
 import { createDialogEmit, deleteDialogEmit } from "./socket/socket.emits";
 
@@ -95,7 +95,7 @@ export const getMyDialogs = (req: Request, res: Response) => {
         });
 };
 
-export const createDialog = async (req: any, res: Response) => {
+export const createDialog = async (req: Request, res: Response) => {
 
     const { userId, partnerLogin } = req.body;
 
@@ -125,7 +125,8 @@ export const createDialog = async (req: any, res: Response) => {
                 if (createdDialog) {
                     return res.status(401).json({
                         message: "Dialog is already created"
-                    })
+                    });
+
                 }
             });
 
@@ -142,11 +143,12 @@ export const createDialog = async (req: any, res: Response) => {
                     return res.status(401).json({
                         message: err,
                     })
+
                 }
 
-                createDialogEmit();
+                createDialogEmit({ userId: String(userId), partnerId: String(partner._id) });
 
-                res.status(200).json({
+                return res.status(200).json({
                     message: "Dialog was created!",
                     data: resp
                 })

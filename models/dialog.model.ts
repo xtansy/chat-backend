@@ -1,8 +1,7 @@
 import { Schema, model } from "mongoose";
-import { Types, Document } from "mongoose";
+import { Document } from "mongoose";
 
-import { DialogModel } from "../@types";
-
+import { DialogModel } from "../@types/models";
 
 export type DialogModelDocument = DialogModel & Document;
 

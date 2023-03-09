@@ -1,8 +1,19 @@
-import { io } from "../../server"
 import { ServerToClientEvents } from "../../@types/socket";
+import { io } from "../../server"
+import { userIdAndSocketId } from "./socketIdAndUserId";
 
-export const createDialogEmit = () => {
-    io.emit("createDialog", { text: "New dialog was created" })
+export const createDialogEmit = ({ userId, partnerId }: { userId: string, partnerId: string }) => {
+    const userSocketId = userIdAndSocketId.get(userId);
+    const partnerSocketId = userIdAndSocketId.get(partnerId);
+
+    if (userSocketId) {
+        io.in(userSocketId).emit("createDialog", { text: "New dialog was created" })
+    }
+
+    if (partnerSocketId) {
+        io.in(partnerSocketId).emit("createDialog", { text: "New dialog was created" })
+    }
+
 }
 
 export const deleteDialogEmit = ({ dialogId }: { dialogId: string }) => {

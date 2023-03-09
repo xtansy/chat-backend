@@ -1,5 +1,7 @@
 {
-    "watch": [""],
+    "watch": [
+        ""
+    ],
     "ext": "ts",
     "exec": "ts-node server.ts"
 }

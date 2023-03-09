@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import { authConfig } from "../config/auth.config";
 import { db } from "../models";
 import { Response, Request } from "express";
-import { UserModel } from "../@types/";
+import { UserModel } from "../@types/models";
 
 const User = db.user;
 const Role = db.role;

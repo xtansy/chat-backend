@@ -1,18 +1,19 @@
 import { Socket } from "socket.io";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
 
-import { ClientToServerEvents, ServerToClientEvents } from "../../@types/socket";
 import { db } from "../../models";
 import { messageEmit } from "./socket.emits";
 import { cloudinaryUploadImages } from "../../utils/cloudinary/cloudinary.services";
-import { socketIdAndUserId } from "./socketIdAndUserId";
+import { getUserIdsArrBySocketId } from "../../utils/helpers";
+import { userIdAndSocketId } from "./socketIdAndUserId";
+import { ClientToServerEvents, ServerToClientEvents } from "../../@types/socket";
 
 export const socketOnConnect = (socket: Socket<ClientToServerEvents, ServerToClientEvents, DefaultEventsMap, any>) => {
 
     // join
-    socket.on("join", (dialogIds) => {
-        socket.join(dialogIds)
-        // socketIdAndUserId.set();
+    socket.on("join", ({ dialogIds, userId }) => {
+        socket.join(dialogIds);
+        userIdAndSocketId.set(userId, socket.id);
     })
 
 
@@ -27,6 +28,13 @@ export const socketOnConnect = (socket: Socket<ClientToServerEvents, ServerToCli
         const dialog = await db.dialog.findById(dialogId).exec();
         dialog?.messages.push(messageDb);
         dialog?.save();
+
         messageEmit({ dialogId, message: messageDb });
     })
+
+    socket.on("disconnect", () => {
+        const userIds = getUserIdsArrBySocketId(userIdAndSocketId, socket.id);
+        userIds.forEach(id => userIdAndSocketId.delete(id));
+    })
+
 }

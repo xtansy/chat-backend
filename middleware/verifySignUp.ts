@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
+import { RoleType } from "../@types/models";
 import { db } from "../models";
-import { RoleType } from "../@types";
 
 const { user: User } = db;
 

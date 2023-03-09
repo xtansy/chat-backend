@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 import { Document } from "mongoose";
+import { UserModel } from "../@types/models";
 
-import { UserModel } from "../@types";
 
 export type UserModelDocument = UserModel & Document;
 

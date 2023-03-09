@@ -1,6 +1,5 @@
 import { Schema, model, Document } from "mongoose";
-
-import { RoleModel } from "../@types";
+import { RoleModel } from "../@types/models";
 
 export type RoleModelDocument = RoleModel & Document;
 

@@ -1,17 +1,25 @@
 {
     "compilerOptions": {
         "module": "CommonJS",
+        // "typeRoots": [
+        //     "./@types/models",
+        //     "./@types/socket",
+        //     "./node_modules/@types"
+        // ],
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,
         "target": "ESNext",
         "moduleResolution": "Node",
         "outDir": "dist",
         "noFallthroughCasesInSwitch": true,
-        "isolatedModules": false,
+        // "isolatedModules": true,
         "strict": true,
         "noImplicitAny": true,
         "useUnknownInCatchVariables": false,
     },
+    "include": [
+        "**/*.ts"
+    ],
     "ts-node": {
         "esm": true
     },

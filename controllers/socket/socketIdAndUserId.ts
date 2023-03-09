@@ -1,2 +1,2 @@
 
-export const socketIdAndUserId = new Map<string, string>();
+export const userIdAndSocketId = new Map<string, string>();

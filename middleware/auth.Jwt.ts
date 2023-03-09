@@ -6,21 +6,21 @@ export const verifyToken = (req: Request, res: Response, next: () => void) => {
     const token = req.headers["x-access-token"] as string;
 
     if (!token) {
-        return res.status(403).send({ message: "No token provided" });
+        return res.status(403).json({ message: "No token provided" });
     }
 
     // jwt по токену определит нужный объект с _id юзера, который мы создаем в signin
     // суем этот id в req.body.userId и бекенд понимает с каким юзером работаем
-    jwt.verify(token, authConfig.secret, (err, decoded) => {
+    jwt.verify(token, authConfig.secret, (err, decoded: any) => {
         if (err || !decoded) {
-            return res.status(401).send({ message: "Unauthorized!" });
+            return res.status(401).json({ message: "Unauthorized!" });
         }
-        if (typeof decoded !== "string") {
-            req.body.userId = decoded.id;
-            next();
-        } else {
-            return res.status(403).send({ message: "Decoded error" });
-        }
+        // if (typeof decoded !== "string") {
+        req.body.userId = decoded.id;
+        next();
+        // } else {
+        // return res.status(403).send({ message: "Decoded error" });
+        // }
     });
 };
 

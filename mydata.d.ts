@@ -1,3 +1,0 @@
-interface CoolInterface {
-    name: string;
-}

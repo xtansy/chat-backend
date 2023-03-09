@@ -4,12 +4,13 @@ export interface ServerToClientEvents {
     createDialog: (obj: { text: string }) => void;
     deleteDialog: (obj: { text: string }) => void;
 }
-interface ChatMessage {
+export interface ChatMessage {
     text: string;
     imagesFiles: Buffer[];
 }
 export interface ClientToServerEvents {
-    join: (dialogIds: string[]) => void;
+    join: (obj: { dialogIds: string[], userId: string }) => void;
+
     message: (obj: { dialogId: string; message: ChatMessage, userId: string }) => void;
 }
 
