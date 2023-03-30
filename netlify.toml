@@ -1,5 +1,0 @@
-[build]
-  command = "npm run build && node server.js"
-  publish = "dist"
-[dev]
-  command = "npm start"
