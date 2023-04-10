@@ -9,7 +9,11 @@
             "src": "npm run build",
             "use": "@now/static-build",
             "config": {
-                "distDir": "dist"
+                "distDir": "dist",
+                "production": {
+                    "buildCommand": "npm run build",
+                    "outputDirectory": "dist"
+                }
             }
         }
     ],
