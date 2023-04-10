@@ -2,7 +2,7 @@
     "version": 2,
     "builds": [
         {
-            "src": "src/index.ts",
+            "src": "server.ts",
             "use": "@vercel/node",
             "config": {
                 "production": {
@@ -15,7 +15,7 @@
     "routes": [
         {
             "src": "/.*",
-            "dest": "/src/index.ts"
+            "dest": "dist/server.js"
         }
     ]
 }
