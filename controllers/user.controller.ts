@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
 import { db } from "../models";
-import { cloudinaryUploadImage, cloudinaryDeleteImage } from "../utils/cloudinary/cloudinary.services";
+import {
+    cloudinaryUploadImage,
+    cloudinaryDeleteImage,
+} from "../utils/cloudinary/cloudinary.services";
 import bcrypt from "bcryptjs";
 
 const User = db.user;
@@ -20,47 +23,45 @@ export const index = async (req: Request, res: Response) => {
     }
 };
 
-
 export const getMe = async (req: Request, res: Response) => {
     const userId = req.body.userId;
-    User.findById(userId).populate("role").exec(((err, user) => {
-        if (err || !user) {
-            return res.status(404).json({
-                message: "User not found"
-            })
-        }
-        res.json({
-            message: "success",
-            data: user,
+    User.findById(userId)
+        .populate("role")
+        .exec((err, user) => {
+            if (err || !user) {
+                return res.status(404).json({
+                    message: "User not found",
+                });
+            }
+            res.json({
+                message: "success",
+                data: user,
+            });
         });
-    }));
 };
-
 
 export const deleteAll = (req: Request, res: Response) => {
     User.deleteMany({}).exec((err) => {
         if (err) {
             return res.status(403).json({
                 message: "Cannot delete all users",
-                error: err
-            })
+                error: err,
+            });
         }
         res.status(200).json({
             status: "succes",
-            message: "All users has been deleted"
+            message: "All users has been deleted",
         });
-    })
+    });
 };
 
-
 export const uploadAvatar = async (req: Request, res: Response) => {
-
     const userId = req.body.userId;
 
     if (!req.file) {
         return res.status(400).json({
-            message: "Нет файла!"
-        })
+            message: "Нет файла!",
+        });
     }
     const buffer = req.file.buffer;
 
@@ -70,10 +71,12 @@ export const uploadAvatar = async (req: Request, res: Response) => {
         if (err || !user) {
             return res.status(400).json({
                 message: "Произошла ошибка!",
-            })
+            });
         }
 
-        await cloudinaryDeleteImage(user.avatar);
+        if (user.avatar) {
+            await cloudinaryDeleteImage(user.avatar);
+        }
 
         user.avatar = response.url;
 
@@ -81,8 +84,8 @@ export const uploadAvatar = async (req: Request, res: Response) => {
 
         return res.status(200).json({
             message: "Загрузил",
-            url: response.url
-        })
+            url: response.url,
+        });
     });
 };
 
@@ -92,15 +95,15 @@ export const deleteAvatar = async (req: Request, res: Response) => {
     User.findById(userId).exec(async (err, user) => {
         if (err || !user) {
             return res.status(400).json({
-                message: "Произошла ошибка"!
-            })
+                message: "Произошла ошибка"!,
+            });
         }
         user.avatar = "";
         await user.save();
         return res.status(200).json({
             message: "Удалил",
-        })
-    })
+        });
+    });
 };
 
 export const changeUserInfo = async (req: Request, res: Response) => {
@@ -114,8 +117,8 @@ export const changeUserInfo = async (req: Request, res: Response) => {
     User.findById(userId).exec(async (err, user) => {
         if (err || !user) {
             return res.status(404).json({
-                message: "Пользователь не изменен!"
-            })
+                message: "Пользователь не изменен!",
+            });
         }
 
         user.email = email;
@@ -126,9 +129,9 @@ export const changeUserInfo = async (req: Request, res: Response) => {
         await user.save();
 
         return res.status(200).json({
-            message: "Пользователь успешно обновлён!"
-        })
-    })
+            message: "Пользователь успешно обновлён!",
+        });
+    });
 };
 
 export const changeUserPassword = async (req: Request, res: Response) => {
@@ -138,11 +141,10 @@ export const changeUserPassword = async (req: Request, res: Response) => {
     const userId = req.body.userId;
 
     User.findById(userId).exec(async (err, user) => {
-
         if (err || !user) {
             return res.status(404).json({
-                message: "Пароль не изменен!"
-            })
+                message: "Пароль не изменен!",
+            });
         }
 
         const passwordIsValid = bcrypt.compareSync(oldPassword, user.password);
@@ -152,17 +154,15 @@ export const changeUserPassword = async (req: Request, res: Response) => {
             });
         }
 
-        user.password = bcrypt.hashSync(newPassword, 8)
+        user.password = bcrypt.hashSync(newPassword, 8);
 
         await user.save();
 
         return res.status(200).json({
-            message: "Пароль успешно обновлён!"
-        })
+            message: "Пароль успешно обновлён!",
+        });
     });
 };
-
-
 
 export const allAccess = (req: Request, res: Response) => {
     res.status(200).send("Public Content.");
@@ -179,4 +179,3 @@ export const adminBoard = (req: Request, res: Response) => {
 export const moderatorBoard = (req: Request, res: Response) => {
     res.status(200).send("Moderator Content.");
 };
-
