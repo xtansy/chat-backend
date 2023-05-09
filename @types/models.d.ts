@@ -31,4 +31,11 @@ export interface DialogModel {
     // lastMessage: MessageModel;
 }
 
+export interface PostModel {
+    text: string;
+    image?: string;
+    likes: UserModel[];
+    user: UserModel;
+}
+
 

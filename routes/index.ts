@@ -3,3 +3,4 @@ export * from "./dialog.route"
 export * from "./message.route"
 export * from "./role.route"
 export * from "./user.route"
+export * from "./post.route";

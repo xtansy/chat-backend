@@ -4,6 +4,7 @@ import { User, UserModelDocument } from "./user.model";
 import { RoleModelDocument, Role } from "./role.model";
 import { DialogModelDocument, Dialog } from "./dialog.model";
 import { MessageModelDocument, Message } from "./message.model";
+import { PostModelDocument, Post } from "./post.model";
 import { RoleType } from "../@types/models";
 mongoose.Promise = global.Promise;
 
@@ -14,6 +15,7 @@ interface Database {
     ROLES: RoleType[];
     dialog: Model<DialogModelDocument>;
     message: Model<MessageModelDocument>;
+    post: Model<PostModelDocument>;
 }
 export const db: Database = {
     mongoose,
@@ -21,5 +23,7 @@ export const db: Database = {
     role: Role,
     ROLES: ["user", "admin", "moderator"],
     dialog: Dialog,
-    message: Message
+    message: Message,
+    post: Post
 };
+A

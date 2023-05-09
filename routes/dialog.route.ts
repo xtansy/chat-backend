@@ -1,8 +1,7 @@
 import { Express } from "express-serve-static-core";
 
 import { getMyDialogs, createDialog, index, deleteAll, deleteDialog } from "../controllers/dialog.controller";
-import { verifyToken, validate } from "../middleware";
-import { createDialogValidation } from "../utils";
+import { verifyToken } from "../middleware";
 
 export const dialogRoute = (app: Express) => {
 

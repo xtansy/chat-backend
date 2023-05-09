@@ -40,6 +40,23 @@ export const getMe = async (req: Request, res: Response) => {
         });
 };
 
+export const getUserById = async (req: Request, res: Response) => {
+    const userId = req.params.userId;
+    User.findById(userId)
+        .populate("role")
+        .exec((err, user) => {
+            if (err || !user) {
+                return res.status(404).json({
+                    message: "User not found",
+                });
+            }
+            res.json({
+                message: "success",
+                data: user,
+            });
+        });
+};
+
 export const deleteAll = (req: Request, res: Response) => {
     User.deleteMany({}).exec((err) => {
         if (err) {

@@ -2,7 +2,6 @@ import { Schema, model } from "mongoose";
 import { Document } from "mongoose";
 import { UserModel } from "../@types/models";
 
-
 export type UserModelDocument = UserModel & Document;
 
 export const User = model<UserModelDocument>(

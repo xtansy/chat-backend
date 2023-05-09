@@ -4,7 +4,7 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 
 import { mongoDbConnect } from "./core/mongodb";
-import { authRoute, userRoute, messageRoute, dialogRoute, roleRoute } from "./routes";
+import { authRoute, userRoute, messageRoute, dialogRoute, roleRoute, postRoute } from "./routes";
 import { socketOnConnect } from "./controllers/socket/socket.controller";
 import { ClientToServerEvents, ServerToClientEvents } from "./@types/socket";
 
@@ -31,6 +31,7 @@ userRoute(app);
 dialogRoute(app);
 roleRoute(app);
 messageRoute(app);
+postRoute(app);
 
 
 io.on('connection', socketOnConnect);
