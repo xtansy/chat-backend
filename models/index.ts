@@ -26,4 +26,3 @@ export const db: Database = {
     message: Message,
     post: Post
 };
-A

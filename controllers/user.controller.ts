@@ -26,7 +26,7 @@ export const index = async (req: Request, res: Response) => {
 export const getMe = async (req: Request, res: Response) => {
     const userId = req.body.userId;
     User.findById(userId)
-        .populate("role")
+        .populate(["role", "friends"])
         .exec((err, user) => {
             if (err || !user) {
                 return res.status(404).json({
@@ -178,6 +178,65 @@ export const changeUserPassword = async (req: Request, res: Response) => {
         return res.status(200).json({
             message: "Пароль успешно обновлён!",
         });
+    });
+};
+
+export const addFriend = async (req: Request, res: Response) => {
+    const { userId, partnerId } = req.body;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+        return res.status(404).json({
+            message: "Пользователь не найден",
+        });
+    }
+
+    const partner = await User.findById(partnerId);
+    if (!partner) {
+        return res.status(404).json({
+            message: "Партнер не найден",
+        });
+    }
+
+    user.friends.push(partner);
+    partner.friends.push(user);
+
+    await user.save();
+    await partner.save();
+
+    return res.status(200).json({
+        message: "Пользователь добавлен в друзья!",
+    });
+};
+
+
+export const removeFriend = async (req: Request, res: Response) => {
+    const { userId, partnerId } = req.body;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+        return res.status(404).json({
+            message: "Пользователь не найден",
+        });
+    }
+
+    const partner = await User.findById(partnerId);
+    if (!partner) {
+        return res.status(404).json({
+            message: "Партнер не найден",
+        });
+    }
+
+    user.friends = user.friends.filter(item => String(item._id) !== String(partner._id));
+    partner.friends = partner.friends.filter(item => String(item._id) !== String(user._id));
+
+    await user.save();
+    await partner.save();
+
+    return res.status(200).json({
+        message: "Пользователь удален из друзей!",
     });
 };
 

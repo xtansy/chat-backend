@@ -154,6 +154,35 @@ export const like = (req: Request, res: Response) => {
 }
 
 
+export const getLentaPosts = async (req: Request, res: Response) => {
+    const { userId } = req.body;
+    const user = await User.findById(userId);
+
+    if (!user) {
+        return res.status(403).json({
+            message: "Cannot find user",
+        });
+    };
+
+    let promises: any = [];
+
+    user.friends.forEach((friend) => {
+        const post = Post.find({ user: friend._id }).populate("user");
+        promises.push(post);
+    })
+
+    Promise.all(promises)
+        .then(result => {
+            result = [].concat(...result);
+            res.status(200).json({
+                data: result,
+                message: "Lenta was finded",
+            });
+        })
+}
+
+
+
 
 
 

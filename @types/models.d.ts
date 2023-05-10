@@ -15,6 +15,7 @@ export interface UserInfo {
 }
 export interface UserModel extends UserInfo {
     password: string;
+    friends: UserModel[];
 }
 
 export interface MessageModel {

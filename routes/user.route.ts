@@ -1,7 +1,7 @@
 import { Express } from "express-serve-static-core";
 
 import { verifyToken, validate } from "../middleware";
-import { userBoard, index, deleteAll, getMe, uploadAvatar, deleteAvatar, changeUserInfo, changeUserPassword, getUserById } from "../controllers/user.controller";
+import { userBoard, index, deleteAll, getMe, uploadAvatar, deleteAvatar, changeUserInfo, changeUserPassword, getUserById, addFriend, removeFriend } from "../controllers/user.controller";
 import { upload } from "../core/multer";
 import { changeUserPasswordValidation, changeUserInfoValidation } from "../utils";
 
@@ -17,6 +17,9 @@ export const userRoute = (app: Express) => {
 
     app.delete("/users/deleteAll", deleteAll);
     app.delete("/users/deleteAvatar", verifyToken, deleteAvatar);
+
+    app.patch("/users/addFriend", verifyToken, addFriend);
+    app.patch("/users/removeFriend", verifyToken, removeFriend);
 
     app.get("/test/all", userBoard);
     app.get("/test/user", verifyToken, userBoard);

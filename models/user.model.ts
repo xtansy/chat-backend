@@ -27,6 +27,11 @@ export const User = model<UserModelDocument>(
             required: true,
             type: String,
         },
+        friends: [{
+            required: true,
+            type: Schema.Types.ObjectId,
+            ref: "User",
+        }],
         role: {
             required: true,
             type: Schema.Types.ObjectId,

@@ -22,6 +22,7 @@ export const signup = (req: Request, res: Response) => {
         const data: Omit<UserModel, "_id"> = {
             login,
             email,
+            friends: [],
             name,
             surname,
             password: bcrypt.hashSync(password, 8),
