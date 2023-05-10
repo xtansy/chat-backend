@@ -16,6 +16,12 @@ export const io = new Server<ClientToServerEvents, ServerToClientEvents>(httpSer
     },
 });
 
+app.use(function (req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*"); // разрешить запросы от любого домена
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
+
 app.use(cors());
 
 // parse requests of content-type - application/json
